@@ -1,6 +1,6 @@
 <div align="center">
 
-# Utilidades — Seaka-bot
+<img src="https://mnsa.com.br/assets/img/github/utilidades-capa.png" alt="Utilidades — Seaka-bot" width="100%">
 
 **Comandos de utilidade do Sea pro BDFD:** prefixo por servidor, say, votação com botões, calculadora, contador de letras, timestamp unix, pesquisa no Google e mais. Cada arquivo tem `$c[]` explicando o que cada parte faz.
 
