@@ -1,4 +1,4 @@
-$c[COMO FUNCIONA. Cria um webhook com o apelido e a foto de quem foi mencionado, manda o texto por ele e apaga o webhook. Precisa mencionar alguém]
+$c[COMO FUNCIONA. Cria um webhook com o apelido e a foto de quem foi mencionado, manda o texto por ele e apaga o webhook. Precisa mencionar alguém. Os blocos async rodam em segundo plano, e o await espera o bloco 1 acabar antes de apagar o webhook]
 $onlyIf[$userExists[$mentioned[1]]==true; ]
 $c[EMOJIS DINÂMICOS. Em vez de colar o ID do emoji, o comando procura pelo nome. A primeira linha junta os emojis de todos os servidores da variável Emojis, IDs separados por traço. A segunda acha cada nome da lista e guarda o emoji pronto em e_nome, como e_errado. Trocou os emojis de servidor, é só mudar a variável]
 $var[emjSplit;$joinSplitText[⁂]]$textSplit[$getVar[Emojis];-]$var[emjLista;]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;$|var[emjLista\;$|var[emjLista\] $|serverEmojis[$|splitText[$|var[emjI\]\]\; \]\]$|var[emjI\;$|calculate[$|var[emjI\]+1\]\]]]$eval[$replaceText[$var[emjCode];|;;-1]]
@@ -6,6 +6,7 @@ $textSplit[errado; ]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;
 $onlyAdmin[$var[e_errado] `Você não tem permissão para usar este comando`]
 $onlyBotPerms[managewebhooks;$var[e_errado] `Não tenho permissão de alterar webhooks`]
 $nomention
+$async[1]
 
 $c[cria o webhook e armazena a url na variavel "URL]
 $var[URL;$webhookCreate[$channelID;$nickname[$mentioned[1]];]]
@@ -18,11 +19,15 @@ $var[mensagem;$replaceText[$message;@$username[$mentioned[1]]; ;-1]]
 $webhookContent[$var[URL];$var[mensagem]]
 
 
+$endasync
+$await[1]
 
+$async[2]
 
 
 $c[deleta o webhook depois de executar a ação]
 $webhookDelete[$var[URL]]
 
 $deletecommand
+$endasync
 

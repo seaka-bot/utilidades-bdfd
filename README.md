@@ -9,7 +9,7 @@
 </div>
 
 > [!NOTE]
-> **Código de acervo.** Saiu do Sea, um bot que rodou no BDFD. Os comandos estão como eram, com quatro mudanças: os emojis viraram dinâmicos (veja [a aula 2](#aula-2-emojis-dinâmicos)), o `==calc` avisa como usar quando vem vazio, o `==dizer` perdeu os `$async`/`$await` (não existem no BDFD) e o `==unix` foi reescrito porque a conta antiga errava a data.
+> **Código de acervo.** Saiu do Sea, um bot que rodou no BDFD. Os comandos estão como eram, com três mudanças: os emojis viraram dinâmicos (veja [a aula 2](#aula-2-emojis-dinâmicos)), o `==calc` avisa como usar quando vem vazio e o `==unix` foi reescrito porque a conta antiga errava a data.
 
 ## Comandos
 
