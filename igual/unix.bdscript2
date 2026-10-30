@@ -1,0 +1,30 @@
+$nomention
+$c[==unix dia mês ano mostra o timestamp unix dessa data, à meia-noite no horário de Brasília]
+$onlyIf[$argCount[$message]==3;Use assim: `==unix 25 12 2026` (dia mês ano)]
+$onlyIf[$and[$isNumber[$message[1]]==true;$isNumber[$message[2]]==true;$isNumber[$message[3]]==true]==true;Só números: `==unix 25 12 2026`]
+$var[d;$message[1]]
+$var[m;$message[2]]
+$var[a;$message[3]]
+$onlyIf[$and[$var[m]>=1;$var[m]<=12]==true;O mês vai de 1 a 12.]
+$onlyIf[$and[$var[d]>=1;$var[d]<=31]==true;O dia vai de 1 a 31.]
+$onlyIf[$var[a]>=1970;O ano precisa ser 1970 ou depois.]
+
+$c[1. ANOS INTEIROS. 365 dias por ano desde 1970, mais 1 por ano bissexto que já passou. Bissexto é de 4 em 4 anos, menos os de 100 em 100, mas os de 400 em 400 voltam a ser]
+$var[bissextos;$calculate[$floor[$calculate[($var[a]-1969)/4]]-$floor[$calculate[($var[a]-1901)/100]]+$floor[$calculate[($var[a]-1601)/400]]]]
+$var[dias;$calculate[($var[a]-1970)*365+$var[bissextos]]]
+
+$c[2. MESES. A lista tem quantos dias o ano já andou no começo de cada mês. Janeiro 0, fevereiro 31, março 59 e assim por diante]
+$textSplit[0 31 59 90 120 151 181 212 243 273 304 334; ]
+$var[dias;$calculate[$var[dias]+$splitText[$var[m]]+$var[d]-1]]
+
+$c[3. FEVEREIRO. Se o ano é bissexto e a data é depois de fevereiro, fevereiro teve 29 dias]
+$if[$var[m]>2]
+$if[$or[$and[$modulo[$var[a];4]==0;$modulo[$var[a];100]!=0]==true;$modulo[$var[a];400]==0]==true]
+$var[dias;$calculate[$var[dias]+1]]
+$endif
+$endif
+
+$c[4. SEGUNDOS. Dias vezes 86400, mais 3 horas porque meia-noite em Brasília é 3 da manhã no horário universal]
+$var[unix;$calculate[$var[dias]*86400+10800]]
+`$var[unix]`
+<t:$var[unix]:F> · <t:$var[unix]:R>

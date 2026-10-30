@@ -1,0 +1,93 @@
+$nomention
+$c[O ID do botão vem em partes separadas por cerquilha. A parte 1 é sempre pool, a 2 é a etapa e o resto depende da etapa]
+$textSplit[$customID;#]
+$onlyIf[$splitText[1]==pool; ]
+
+$c[EMOJIS DINÂMICOS. Em vez de colar o ID do emoji, o comando procura pelo nome. A primeira linha junta os emojis de todos os servidores da variável Emojis, IDs separados por traço. A segunda acha cada nome da lista e guarda o emoji pronto em e_nome, como e_errado. Trocou os emojis de servidor, é só mudar a variável]
+$var[emjSplit;$joinSplitText[⁂]]$textSplit[$getVar[Emojis];-]$var[emjLista;]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;$|var[emjLista\;$|var[emjLista\] $|serverEmojis[$|splitText[$|var[emjI\]\]\; \]\]$|var[emjI\;$|calculate[$|var[emjI\]+1\]\]]]$eval[$replaceText[$var[emjCode];|;;-1]]
+$textSplit[errado; ]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;$|var[emjN\;$|splitText[$|var[emjI\]\]\]$|textSplit[$|var[emjLista\]\;<:$|var[emjN\]:\]$|textSplit[$|splitText[2\]\;>\]$|var[e_$|var[emjN\]\;<:$|var[emjN\]:$|splitText[1\]>\]$|textSplit[errado\; \]$|var[emjI\;$|calculate[$|var[emjI\]+1\]\]]]$eval[$replaceText[$var[emjCode];|;;-1]]$textSplit[$var[emjSplit];⁂]
+$if[$authorID!=$botOwnerID]
+$if[$isAdmin[$authorID]==false]
+$ephemeral $removeButtons $var[e_errado] `Apenas Adms podem iniciar uma votação.` $stop
+$endif 
+$endif
+
+$c[ETAPA settings. Troca a mensagem do comando por uma só sua, com o botão enviar e a opção 1]
+$if[$splitText[2]==settings]
+$deleteMessage[$channelID;$messageID]
+$removeButtons
+$ephemeral
+$var[nm;$splitText[3]]
+$var[authorID;$splitText[4]]
+$var[tipo;true]
+
+$description[ ### settings
+
+**Enviar.** 
+
+**1.** - Usuários podem votar + de uma vez?
+[Não\](https://a) (padrão)
+]
+$addButton[no;pool#embed#$var[nm]#$var[tipo];enviar;secondary]
+$addButton[no;pool#1#$var[nm]#$var[tipo];1.;secondary]
+$c[ETAPA 1. Liga e desliga votar mais de uma vez e redesenha as configurações]
+$elseif[$splitText[2]==1]
+$removeButtons
+$var[nm;$splitText[3]]
+$var[tipo;$splitText[4]] $if[$var[tipo]==true]$var[tipo;false]$elseif[1==1]$var[tipo;true]$endif
+$description[ ### settings
+
+**Enviar.** 
+
+**1.** - Usuários podem votar + de uma vez?
+[$replaceText[$replaceText[$var[tipo];true;Não];false;Sim]\](https://a)
+]
+
+$addButton[no;pool#embed#$var[nm]#$var[tipo];enviar;secondary]
+$addButton[no;pool#1#$var[nm]#$var[tipo];1. ;secondary]
+$c[ETAPA send. Abre o formulário com o título e as opções, uma por linha]
+$elseif[$splitText[2]==send]
+$newModal[pool#embed#$splitText[3]#$splitText[4];Votação]
+$addTextInput[pool1;short;Título.;2;40;yes;;Escreva o tema da votação.]
+$addTextInput[pool2;paragraph;Textos.;2;1500;yes;;Escreva as opções por parágrafo, não precisa adicionar os números.]
+
+$c[ETAPA embed. Manda a votação e cria um botão por opção num loop. A variável de canal PoolVotes guarda o ID da votação e um contador por opção, mais o total no fim]
+$elseif[$splitText[2]==embed]
+
+$var[tipo;$splitText[4]]
+$var[nm;$splitText[3]]
+$var[i;1]
+
+
+$var[id;$sendEmbedMessage[$channelID;_ _; ;;# Votação! 
+### votações iniciadas!;FFFFFF;;;;;;;no;yes]]
+$var[a;1]$var[code;$repeatMessage[10;$|var[nome$|var[i\]%|{-SEMICOL-}%$|var[i\]\]$|var[i%|{-SEMICOL-}%$|calculate[$|var[i\]+1\]\]]]$var[code;$repeatMessage[2;$var[code]]]$eval[$replaceText[$var[code];|;;-1]]
+$var[a;2]$var[i;1]$var[lim;5]$var[lim1;6]$var[code;$repeatMessage[$var[nm];$|addButton[$|if[$|var[lim1\]==$|var[i\]\]yes$|var[lim1%|{-SEMICOL-}%$|calculate[$|var[lim1\]+$|var[lim\]\]\]$|elseif[1==1\]no$|endif%|{-SEMICOL-}%pool#$|var[a\]#$|var[nm\]#$|var[id\]#$|var[tipo\]#$|var[view\]%|{-SEMICOL-}%$|var[nome$|var[i\]\]%|{-SEMICOL-}%secondary%|{-SEMICOL-}%no%|{-SEMICOL-}%%|{-SEMICOL-}%$|var[id\]\]$|var[i%|{-SEMICOL-}%$|calculate[$|var[i\]+1\]\]$|var[a%|{-SEMICOL-}%$|calculate[$|var[a\]+1\]\]]]
+$setChannelVar[PoolVotes;$var[id]$repeatMessage[$var[nm];-0]-0]
+$eval[$replaceText[$var[code];|;;-1]]
+
+$else
+$c[VOTO. Soma um na opção clicada e no total, e redesenha cada opção com uma barra de 10 quadrados proporcional aos votos]
+$var[idnm;$splitText[2]]
+$var[nm;$splitText[3]]
+$var[id;$splitText[4]]
+$if[$splitText[5]==true]$textSplit[$getUserVar[PoolVotes];-]$if[$getTextSplitIndex[$var[id]]!=-1]$ephemeral $removeButtons $var[e_errado] `Você já votou nessa votação!` $stop $else $if[$getTextSplitLength>=195]$setUserVar[PoolVotes;$var[id]]$endif $setUserVar[PoolVotes;$joinSplitText[-]-$var[id]]$endif $endif
+$textSplit[$getChannelVar[PoolVotes];-]
+$if[$splitText[1]!=$var[id]]$ephemeral $removeButtons $var[e_errado] `Parece que essa votação foi encerrada!`$stop$endif
+$editSplitText[$var[idnm];$sum[$splitText[$var[idnm]];1]]
+$editSplitText[$getTextSplitLength;$sum[$splitText[>];1]]
+
+$setChannelVar[PoolVotes;$joinSplitText[-]]
+$textSplit[$getChannelVar[PoolVotes];-]
+$var[barraOFF;⬜]
+$var[barraON;🟥]
+$enableDecimals[yes]
+$var[i;1]$var[a;2]$var[b;1]$var[code;**$|var[b\].** - `($|splitText[$|var[a\]\] votos)`
+$repeatMessage[10;$|var[%%|{-SEMICOL-}%$|multi[$|divide[$|splitText[$|var[a\]\]%|{-SEMICOL-}%$|splitText[>\]\]%|{-SEMICOL-}%10\]\]$|if[$|var[i\]<=$|var[%\]\]$|var[barraON\]$|elseif[1==1\]$|var[barraOFF\]$|endif$|var[i%|{-SEMICOL-}%$|calculate[$|var[i\]+1\]\] ] `[$|multi[$|round[$|var[%\]%|{-SEMICOL-}%1\]%|{-SEMICOL-}%10\]%\]`  $|var[i%|{-SEMICOL-}%1\]$|var[a%|{-SEMICOL-}%$|calculate[$|var[a\]+1\]\] 
+]
+$var[code;$repeatMessage[$var[nm];$var[code]$|var[b%|{-SEMICOL-}%$|calculate[$|var[b\]+1\]\]]]
+$description[### Resultados.
+$eval[$replaceText[$var[code];|;;-1]]
+]
+$color[FFFFFF]
+$endif

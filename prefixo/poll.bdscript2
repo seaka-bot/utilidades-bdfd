@@ -1,0 +1,37 @@
+$nomention
+
+$onlyIf[$guildID!=; ]
+$c[PREFIXO. O gatilho no BDFD é só a letra s. Estas linhas conferem se depois do s vem o prefixo do servidor, guardado na variável Prefixo. Com Prefixo igual a asterisco, o comando vira s*]
+$var[Prefixo;$cropText[$message;$charCount[$getServerVar[Prefixo]];]]
+$onlyIf[$var[Prefixo]==$getServerVar[Prefixo]; ]
+$c[NOME. cmd é a palavra logo depois do prefixo, por exemplo say em s*say]
+$var[cmd;$replaceText[$message[1];$var[Prefixo];;1]]
+$c[A lista logo abaixo tem os nomes que chamam este comando. Se cmd não estiver nela, triggerCMD fica vazio e o comando para em silêncio. É assim que vários comandos dividem o mesmo gatilho s]
+$textSplit[poll pool votações votes; ] $var[i;1] $var[code;$repeatMessage[$getTextSplitLength;$|if[$|var[cmd\]==$|splitText[$|var[i\]\]\] $|var[triggerCMD\;true\] $|stop $|endif $|var[i%|{-SEMICOL-}%$|calculate[$|var[i\]+1\]\]]] $eval[$replaceText[$var[code];|;;-1]] $if[$var[triggerCMD]==] $stop $endif
+$c[ARGUMENTOS. Tira o prefixo e o nome da mensagem e guarda cada palavra que sobrou em message1, message2, até message10]
+$var[message;$replaceText[$message;$var[Prefixo]$var[cmd];;1]]
+$textSplit[$var[message]; ]$var[i;1] $var[code;$repeatMessage[10;$|var[message$|var[i\]\;$|splitText[$|var[i\]\]\] ]] $eval[$replaceText[$var[code];|;;-1]]
+$onlyIf[$checkUserPerms[$botID;embedlinks]==true; ]
+$c[EMOJIS DINÂMICOS. Em vez de colar o ID do emoji, o comando procura pelo nome. A primeira linha junta os emojis de todos os servidores da variável Emojis, IDs separados por traço. A segunda acha cada nome da lista e guarda o emoji pronto em e_nome, como e_errado. Trocou os emojis de servidor, é só mudar a variável]
+$var[emjSplit;$joinSplitText[⁂]]$textSplit[$getVar[Emojis];-]$var[emjLista;]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;$|var[emjLista\;$|var[emjLista\] $|serverEmojis[$|splitText[$|var[emjI\]\]\; \]\]$|var[emjI\;$|calculate[$|var[emjI\]+1\]\]]]$eval[$replaceText[$var[emjCode];|;;-1]]
+$textSplit[errado; ]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;$|var[emjN\;$|splitText[$|var[emjI\]\]\]$|textSplit[$|var[emjLista\]\;<:$|var[emjN\]:\]$|textSplit[$|splitText[2\]\;>\]$|var[e_$|var[emjN\]\;<:$|var[emjN\]:$|splitText[1\]>\]$|textSplit[errado\; \]$|var[emjI\;$|calculate[$|var[emjI\]+1\]\]]]$eval[$replaceText[$var[emjCode];|;;-1]]$textSplit[$var[emjSplit];⁂]
+$c[SÓ ADMIN OU O DONO DO BOT começam votação]
+$if[$authorID!=$botOwnerID]
+$if[$isAdmin[$authorID]==false]
+$var[e_errado] `Apenas Adms podem iniciar uma votação.` $stop
+$endif 
+$endif
+$onlyIf[$var[message1]!=;$var[e_errado] `Modo de uso : ==pool (quantidade de opções)`]
+$c[QUANTAS OPÇÕES. message1 precisa ser um número de 1 a 10, sem letras nem pontuação]
+$var[nm;$replaceText[$var[message1];
+;;-1]]
+$onlyIf[$checkContains[$var[nm];.;/;$;_;@;,;&;*;+;=;(;)]==false;$var[e_errado] `Não inclua pontuação`]
+$onlyIf[$checkContains[$var[nm];.;a;b;c;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z]==false;$var[e_errado] `Não inclua letras`]
+$onlyIf[$var[nm]>=1;$var[e_errado] `Inclua um número positivo`]
+$onlyIf[$var[nm]<=10;$var[e_errado] `Limite de 10 opções`]
+$onlyIf[$isNumber[$var[nm]]==true; ]
+
+$c[TIPO. message2 diz se dá pra votar mais de uma vez. Sem nada, fica true, que no código quer dizer um voto por pessoa]
+$if[$or[$var[message2]==true;$var[message2]==false]==true]$var[tipo;$var[message2]] $else $var[tipo;true] $endif
+$c[O botão leva pras configurações. O ID carrega tudo separado por cerquilha: pool, a etapa, quantas opções e quem pediu]
+$addButton[no;pool#settings#$var[nm]#$authorID;Configurações;secondary]

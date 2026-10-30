@@ -1,0 +1,29 @@
+$nomention
+$onlyIf[$guildID!=; ]
+$c[PREFIXO. O gatilho no BDFD é só a letra s. Estas linhas conferem se depois do s vem o prefixo do servidor, guardado na variável Prefixo. Com Prefixo igual a asterisco, o comando vira s*]
+$var[Prefixo;$cropText[$message;$charCount[$getServerVar[Prefixo]];]]
+$onlyIf[$var[Prefixo]==$getServerVar[Prefixo]; ]
+$c[NOME. cmd é a palavra logo depois do prefixo, por exemplo say em s*say]
+$var[cmd;$replaceText[$message[1];$var[Prefixo];;1]]
+$c[A lista logo abaixo tem os nomes que chamam este comando. Se cmd não estiver nela, triggerCMD fica vazio e o comando para em silêncio. É assim que vários comandos dividem o mesmo gatilho s]
+$textSplit[say; ] $var[i;1] $var[code;$repeatMessage[$getTextSplitLength;$|if[$|var[cmd\]==$|splitText[$|var[i\]\]\] $|var[triggerCMD\;true\] $|stop $|endif]] $eval[$replaceText[$var[code];|;;-1]] $if[$var[triggerCMD]==] $stop $endif
+$c[ARGUMENTOS. Tira o prefixo e o nome da mensagem e guarda cada palavra que sobrou em message1, message2, até message10]
+$var[message;$replaceText[$message;$var[Prefixo]$var[cmd];;1]]
+$textSplit[$var[message]; ]$var[i;1] $var[code;$repeatMessage[10;$|var[message$|var[i\]\;$|splitText[$|var[i\]\]\] ]] $eval[$replaceText[$var[code];|;;-1]]
+
+$c[SEM MENÇÃO. Se a mensagem menciona alguém, o say não roda, pra ninguém marcar gente pelo bot]
+$onlyIf[$userExists[$mentioned[1]]==false; ]
+$onlyIf[$var[message1]!=; ]
+$c[EMOJIS DINÂMICOS. Em vez de colar o ID do emoji, o comando procura pelo nome. A primeira linha junta os emojis de todos os servidores da variável Emojis, IDs separados por traço. A segunda acha cada nome da lista e guarda o emoji pronto em e_nome, como e_errado. Trocou os emojis de servidor, é só mudar a variável]
+$var[emjSplit;$joinSplitText[⁂]]$textSplit[$getVar[Emojis];-]$var[emjLista;]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;$|var[emjLista\;$|var[emjLista\] $|serverEmojis[$|splitText[$|var[emjI\]\]\; \]\]$|var[emjI\;$|calculate[$|var[emjI\]+1\]\]]]$eval[$replaceText[$var[emjCode];|;;-1]]
+$textSplit[errado; ]$var[emjI;1]$var[emjCode;$repeatMessage[$getTextSplitLength;$|var[emjN\;$|splitText[$|var[emjI\]\]\]$|textSplit[$|var[emjLista\]\;<:$|var[emjN\]:\]$|textSplit[$|splitText[2\]\;>\]$|var[e_$|var[emjN\]\;<:$|var[emjN\]:$|splitText[1\]>\]$|textSplit[errado\; \]$|var[emjI\;$|calculate[$|var[emjI\]+1\]\]]]$eval[$replaceText[$var[emjCode];|;;-1]]$textSplit[$var[emjSplit];⁂]
+$c[SÓ ADMIN. Quem não é admin recebe o aviso com o emoji errado]
+$onlyAdmin[$var[e_errado] `Você não tem permissão para usar este comando`]
+$if[$isAdmin[$authorID]==false]
+$sendMessage[$var[message]
+_Messagem enviada por <@$authorID>_]
+$elseif[$isAdmin[$authorID]==true]
+$sendMessage[$var[message]]
+$endif
+$c[APAGA o comando, sobrando só a mensagem do bot]
+$deletecommand
