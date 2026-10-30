@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://mnsa.com.br/assets/img/github/utilidades-capa.png" alt="Utilidades — Seaka-bot" width="100%">
+<img src="https://mnsa.com.br/assets/img/github/utilidades-capa.png?v=2" alt="Utilidades — Seaka-bot" width="100%">
 
 **Comandos de utilidade do Sea pro BDFD:** prefixo por servidor, say, votação com botões, calculadora, contador de letras, timestamp unix, pesquisa no Google e mais. Cada arquivo tem `$c[]` explicando o que cada parte faz.
 
@@ -9,26 +9,26 @@
 </div>
 
 > [!NOTE]
-> **Código de acervo.** Saiu do Sea, um bot que rodou no BDFD. Os comandos estão como eram, com três mudanças: os emojis viraram dinâmicos (veja [a aula 2](#aula-2-emojis-dinâmicos)), o `==calc` avisa como usar quando vem vazio e o `==unix` foi reescrito porque a conta antiga errava a data.
+> **Código de acervo.** Saiu do Sea, um bot que rodou no BDFD. Os comandos estão como eram, com quatro mudanças: os emojis viraram dinâmicos (veja [a aula 2](#aula-2-emojis-dinâmicos)); os comandos antigos que começavam com `==` passaram pro sistema de prefixo, como os outros; o `calc` avisa como usar quando vem vazio; e o `unix` foi reescrito porque a conta antiga errava a data.
 
 ## Comandos
 
 | Arquivo | Gatilho no BDFD | O que faz |
 |---|---|---|
-| `prefixo/prefixo.bdscript2` | `s` | `s*prefixo !` troca o prefixo do servidor. Depois disso o bot responde a `s!`. |
-| `prefixo/say.bdscript2` | `s` | `s*say texto` faz o bot mandar o texto e apaga o seu comando. Só admin. |
-| `prefixo/poll.bdscript2` | `s` | `s*poll 3` começa uma votação com 3 opções (até 10). Só admin. |
+| `comandos/prefixo.bdscript2` | `s` | `s*prefixo !` troca o prefixo do servidor. Depois disso o bot responde a `s!`. |
+| `comandos/say.bdscript2` | `s` | `s*say texto` faz o bot mandar o texto e apaga o seu comando. Só admin. |
+| `comandos/poll.bdscript2` | `s` | `s*poll 3` começa uma votação com 3 opções (até 10). Só admin. |
 | `oninteraction/poll.bdscript2` | `$onInteraction` | Os botões da votação: configurações, formulário, voto e barras de resultado. |
-| `prefixo/meia-noite.bdscript2` | `s*meia noite` | Quanto falta pra meia-noite no horário de Brasília. Só o dono do bot. |
-| `igual/calc.bdscript2` | `==calc` | `==calc 2+2*3` faz a conta. Só o dono do bot. |
-| `igual/contar.bdscript2` | `==contar` | `==contar texto` diz quantos caracteres o texto tem. |
-| `igual/emojis.bdscript2` | `==emoji` | Lista os emojis do servidor. |
-| `igual/dizer.bdscript2` | `==dizer` | `==dizer @pessoa texto` manda o texto com o nome e a foto da pessoa, por webhook. Só admin. |
-| `igual/pesquisa.bdscript2` | `==pesquisa` | `==pesquisa texto` devolve o link da busca no Google. |
-| `igual/ping.bdscript2` | `==ping` | Latência e quando a hospedagem do BDFD expira. |
-| `igual/unix.bdscript2` | `==unix` | `==unix 25 12 2026` mostra o timestamp da data, meia-noite em Brasília. |
+| `comandos/calc.bdscript2` | `s` | `s*calc 2+2*3` faz a conta. Só o dono do bot. |
+| `comandos/contar.bdscript2` | `s` | `s*contar texto` diz quantos caracteres o texto tem. |
+| `comandos/emojis.bdscript2` | `s` | `s*emoji` lista os emojis do servidor. |
+| `comandos/dizer.bdscript2` | `s` | `s*dizer @pessoa texto` manda o texto com o nome e a foto da pessoa, por webhook. Só admin. |
+| `comandos/pesquisa.bdscript2` | `s` | `s*pesquisa texto` devolve o link da busca no Google. |
+| `comandos/ping.bdscript2` | `s` | `s*ping` mostra a latência e quando a hospedagem do BDFD expira. |
+| `comandos/unix.bdscript2` | `s` | `s*unix 25 12 2026` mostra o timestamp da data, meia-noite em Brasília. |
+| `comandos/meia-noite.bdscript2` | `s` | `s*meia noite` diz quanto falta pra meia-noite no horário de Brasília. Só o dono do bot. |
 
-Todos são **BDScript 2**. Os três da pasta `prefixo/` que têm gatilho `s` dividem o mesmo gatilho: cada um confere sozinho se é com ele (veja [a aula 1](#aula-1-vários-comandos-no-mesmo-gatilho)).
+Todos são **BDScript 2**. Os da pasta `comandos/` dividem o mesmo gatilho, `s`: cada um confere sozinho se é com ele (veja [a aula 1](#aula-1-vários-comandos-no-mesmo-gatilho)). Nos exemplos o prefixo é `*`.
 
 ## Instalação
 
@@ -69,7 +69,7 @@ Peça por peça, com a mensagem `s*poll 3`:
 
 **Lembre:** todo comando com gatilho `s` roda em **toda** mensagem que começa com `s`. Por isso a checagem vem primeiro, antes de qualquer coisa pesada.
 
-**Cuidado:** o `prefixo` não aceita `=`, porque os comandos da pasta `igual/` começam com `==`.
+**Cuidado:** o `prefixo` não aceita `=`. Isso sobrou da época em que alguns comandos começavam com `==`, antes do sistema de prefixo.
 
 ## Aula 2: emojis dinâmicos
 
@@ -98,7 +98,7 @@ Peça por peça:
 
 ## Aula 3: data pra timestamp sem função pronta
 
-O BDFD não tem uma função que transforme `25 12 2026` em timestamp. O `==unix` faz a conta na mão, em quatro passos, e cada um tem um `$c[]` no arquivo:
+O BDFD não tem uma função que transforme `25 12 2026` em timestamp. O `unix` faz a conta na mão, em quatro passos, e cada um tem um `$c[]` no arquivo:
 
 1. **Anos inteiros.** 365 dias por ano desde 1970, mais um por ano bissexto que já passou.
 2. **Meses.** A lista `0 31 59 90 …` diz quantos dias o ano já andou no começo de cada mês.

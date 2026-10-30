@@ -1,5 +1,0 @@
-$nomention
-$onlyForIDs[$botOwnerID; ]
-$c[Sem conta depois do comando, avisa como usar em vez de dar erro]
-$onlyIf[$message!=;Use assim: `==calc 2+2*3`]
-$calculate[$message]

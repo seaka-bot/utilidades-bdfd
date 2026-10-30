@@ -1,0 +1,25 @@
+$nomention
+$onlyIf[$guildID!=; ]
+$c[PREFIXO. O gatilho no BDFD é só a letra s. Estas linhas conferem se depois do s vem o prefixo do servidor, guardado na variável Prefixo. Com Prefixo igual a asterisco, o comando vira s*]
+$var[Prefixo;$cropText[$message;$charCount[$getServerVar[Prefixo]];]]
+$onlyIf[$var[Prefixo]==$getServerVar[Prefixo]; ]
+$c[NOME. cmd é a palavra logo depois do prefixo, por exemplo say em s*say]
+$var[cmd;$replaceText[$message[1];$var[Prefixo];;1]]
+$c[A lista logo abaixo tem os nomes que chamam este comando. Se cmd não estiver nela, triggerCMD fica vazio e o comando para em silêncio. É assim que vários comandos dividem o mesmo gatilho s]
+$textSplit[ping; ] $var[i;1] $var[code;$repeatMessage[$getTextSplitLength;$|if[$|var[cmd\]==$|splitText[$|var[i\]\]\] $|var[triggerCMD\;true\] $|stop $|endif $|var[i%|{-SEMICOL-}%$|calculate[$|var[i\]+1\]\]]] $eval[$replaceText[$var[code];|;;-1]] $if[$var[triggerCMD]==] $stop $endif
+$c[ARGUMENTOS. Tira o prefixo e o nome da mensagem e separa as palavras que sobraram. A primeira fica em message1, e todas continuam no split, prontas pro splitText]
+$var[message;$replaceText[$message;$var[Prefixo]$var[cmd];;1]]
+$textSplit[$var[message]; ]$var[i;1] $var[code;$repeatMessage[10;$|var[message$|var[i\]\;$|splitText[$|var[i\]\]\] ]] $eval[$replaceText[$var[code];|;;-1]]
+$c[TEXTO. Tudo que veio depois do nome do comando, sem espaço sobrando nas pontas]
+$var[texto;$trimSpace[$var[message]]]
+$c[A primeira linha da resposta é a latência, a segunda é quando a hospedagem do bot no BDFD acaba]
+$onlyIf[$guildID!=;Você não pode usar esse comando aqui!]
+
+$nomention
+Pong! 🏓 
+**$ping** `ms`
+Vou ser desligado ⏰
+**<t:$hostingExpireTime[yes]:R>**
+
+
+

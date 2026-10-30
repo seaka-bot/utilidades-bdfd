@@ -1,9 +1,0 @@
-$nomention
-$reply
-$suppressErrors
-$c[Uma palavra ou várias muda só o texto da resposta. A conta é a mesma]
-$if[$argCount[$message]==1]
-Na palavra tem $charCount[$message] letras!
-$else
-Na frase tem $charCount[$message] letras!
-$endif

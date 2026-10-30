@@ -1,4 +1,0 @@
-$c[Pega os emojis deste servidor separados por espaço e mostra na descrição, cortando em 2000 caracteres, o limite dela]
-$textSplit[$serverEmojis[$guildID; ]; ]
-$description[$cropText[$joinSplitText[ ];2000;...]]
-$color[#2f3136]
